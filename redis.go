@@ -11,6 +11,7 @@ import (
     "reflect"
     "strconv"
     "strings"
+    "time"
 )
 
 const (
@@ -19,6 +20,8 @@ const (
 
 var defaultAddr = "127.0.0.1:6379"
 
+var defaultTimeOut = time.Second * 1
+
 type Client struct {
     Addr        string
     Db          int
@@ -26,6 +29,7 @@ type Client struct {
     MaxPoolSize int
     //the connection pool
     pool chan net.Conn
+    TimeOut time.Duration
 }
 
 type RedisError string
@@ -163,10 +167,15 @@ func (client *Client) openConnection() (c net.Conn, err error) {
 
     var addr = defaultAddr
 
+    var timeout = defaultTimeOut
+
     if client.Addr != "" {
         addr = client.Addr
     }
-    c, err = net.Dial("tcp", addr)
+    if client.TimeOut != "" {
+        timeout = client.TimeOut
+    }
+    c, err = net.DialTimeout("tcp", addr, timeout)
     if err != nil {
         return
     }
