@@ -172,7 +172,7 @@ func (client *Client) openConnection() (c net.Conn, err error) {
     if client.Addr != "" {
         addr = client.Addr
     }
-    if client.TimeOut != "" {
+    if client.TimeOut > defaultTimeOut {
         timeout = client.TimeOut
     }
     c, err = net.DialTimeout("tcp", addr, timeout)
